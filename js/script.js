@@ -1,5 +1,5 @@
 var margin = {top: 20, right: 20, bottom: 30, left: 300},
-    width = 960 - margin.left - margin.right,
+    width = 1250- margin.left - margin.right,
     height = 500 - margin.top - margin.bottom;
 
 var x = d3.scale.linear()
@@ -64,7 +64,7 @@ d3.tsv("js/data.tsv", function(error, data) {
       .data(data)
     .enter().append("circle")
       .attr("class", "dot")
-      .attr("r", 3.5)
+      .attr("r", function(d) { return d.JOBS_1000;})
       .attr("cx", function(d) { return x(d.salary);})
       .attr("cy", function(d) { return y(d.city); })
       .style("fill", function(d) { return color(d.OCC_TITLE); });
