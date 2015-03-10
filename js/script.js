@@ -1,4 +1,4 @@
-var margin = {top: 20, right: 20, bottom: 30, left: 300},
+var margin = {top: 20, right: 20, bottom: 30, left: 100},
     width = 1250- margin.left - margin.right,
     height = 500 - margin.top - margin.bottom;
 
@@ -21,6 +21,8 @@ var xAxis = d3.svg.axis()
 var yAxis = d3.svg.axis()
     .scale(y)
     .orient("left");
+
+var theData = {};
 
 var svg = d3.select(".chart").append("svg")
     .attr("width", width + margin.left + margin.right)
@@ -45,6 +47,25 @@ d3.tsv("js/data.tsv", function(error, data) {
 
   //y.domain(d3.extent(data, function(d) { return d.city; })).nice();
 
+   setNav();
+  drawChart();
+
+});
+
+function setNav() {
+
+  $(".btn").on("click", function() {
+    var val = $(this).attr("val");
+    OCC_TITLE = val;
+
+    updateChart();
+
+  });
+
+}
+
+
+function drawChart() {
   svg.append("g")
       .attr("class", "x axis")
       .attr("transform", "translate(0," + height + ")")
@@ -58,22 +79,84 @@ d3.tsv("js/data.tsv", function(error, data) {
 
   svg.append("g")
       .attr("class", "y axis")
-      .call(yAxis);
+      .call(yAxis)
+      .text("Metro");
 
-  svg.selectAll(".dot")
-      .data(data)
-    .enter().append("circle")
-      .attr("class", "dot")
-      .attr("r", function(d) { return d.JOBS_1000;})
-      .attr("cx", function(d) { return x(d.salary);})
+        updateChart();
+
+}
+
+
+function updateChart() {
+
+var data =val{};
+  var teams = svg.selectAll(".dot")
+        .data(data, function(d) {
+          return d.OCC_TITLE;
+        });
+
+    teams.enter()
+      .append("circle")
+        .attr("class", "dot")
+        ..attr("r", function(d) {
+              return = Math.sqrt( d.JOBS_1000 )/Math.PI);})
+        .attr("cx", function(d) { return x(d.salary); })
+        .attr("cy", function(d) { return y(d.city); })
+        .style("fill", function(d) { return color(d.OCC_TITLE); });
+
+
+    teams.exit()
+      .transition()
+      .duration(200)
+      .style("fill", "#000");
+
+    teams.transition()
+      .duration(200)
+      .attr("cx", function(d) { return x(d.salary); })
       .attr("cy", function(d) { return y(d.city); })
       .style("fill", function(d) { return color(d.OCC_TITLE); });
+  
+  
+var labels = svg.selectAll(".lbl")
+        .data(data, function(d) {
+          return d.OCC_TITLE;
+        });
+      
+    labels.enter()
+      .append("text")
+        .attr("class", "lbl")
+        .attr("x", function(d) { return x(d.salary); })
+        .attr("y", function(d) { return y(d.city); })
+        .text(function(d) {
+          return d.OCC_TITLE;
+        });
+
+    labels.exit()
+      .remove();
+
+    labels.transition()
+      .duration(200)
+      .attr("x", function(d) { return x(d.salary); })
+      .attr("y", function(d) { return y(d.city); })
+
+}
+
+
+
+//  svg.selectAll(".dot")
+//    .data(data)
+//    .enter().append("circle")
+//      .attr("class", "dot")
+//      .attr("r", function(d) { return d.JOBS_1000;})
+//      .attr("cx", function(d) { return x(d.salary);})
+ //     .attr("cy", function(d) { return y(d.city); })
+ //     .style("fill", function(d) { return color(d.OCC_TITLE); });
 
   var legend = svg.selectAll(".legend")
       .data(color.domain())
     .enter().append("g")
       .attr("class", "legend")
-      .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+      .attr("transform", function(d, i) { return "translate(0," + i * 15 + ")"; });
 
   legend.append("rect")
       .attr("x", width - 18)
@@ -87,5 +170,3 @@ d3.tsv("js/data.tsv", function(error, data) {
       .attr("dy", ".35em")
       .style("text-anchor", "end")
       .text(function(d) { return d; });
-
-});
