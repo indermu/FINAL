@@ -89,7 +89,7 @@ function drawChart() {
 
 function updateChart() {
 
-var data =val{};
+var data =theData[JOBS_1000];
   var teams = svg.selectAll(".dot")
         .data(data, function(d) {
           return d.OCC_TITLE;
@@ -98,8 +98,7 @@ var data =val{};
     teams.enter()
       .append("circle")
         .attr("class", "dot")
-        ..attr("r", function(d) {
-              return = Math.sqrt( d.JOBS_1000 )/Math.PI);})
+        ..attr("r", function(d) { return r(d.JOBS_1000; })
         .attr("cx", function(d) { return x(d.salary); })
         .attr("cy", function(d) { return y(d.city); })
         .style("fill", function(d) { return color(d.OCC_TITLE); });
