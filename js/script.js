@@ -1,6 +1,6 @@
 var margin = {top: 20, right: 20, bottom: 30, left: 100},
     width = 1250- margin.left - margin.right,
-    height = 500 - margin.top - margin.bottom;
+    height = 600 - margin.top - margin.bottom;
 
 var x = d3.scale.linear()
     .range([0, width]);
@@ -24,6 +24,10 @@ var yAxis = d3.svg.axis()
 
 var theData = {};
 
+var currGroup = "Computer and Mathematical Occupations";
+
+// var data= d.JOBS_1000;
+
 var svg = d3.select(".chart").append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
@@ -32,11 +36,17 @@ var svg = d3.select(".chart").append("svg")
 
 d3.tsv("js/data.tsv", function(error, data) {
 
-  console.log(data);
-
   data.forEach(function(d) {
     d.city = d.AREA_NAME;
     d.salary = +d.A_MEAN.replace(",", "");
+
+    if (!theData[d.OCC_TITLE]) {
+      theData[d.OCC_TITLE] = [];
+    }
+
+    theData[d.OCC_TITLE].push(d);
+
+
   });
 
   console.log(data);
@@ -47,7 +57,8 @@ d3.tsv("js/data.tsv", function(error, data) {
 
   //y.domain(d3.extent(data, function(d) { return d.city; })).nice();
 
-   setNav();
+  setNav();
+
   drawChart();
 
 });
@@ -56,7 +67,7 @@ function setNav() {
 
   $(".btn").on("click", function() {
     var val = $(this).attr("val");
-    OCC_TITLE = val;
+    currGroup = val;
 
     updateChart();
 
@@ -82,14 +93,14 @@ function drawChart() {
       .call(yAxis)
       .text("Metro");
 
-        updateChart();
+      updateChart();
 
 }
 
 
 function updateChart() {
 
-var data =theData[JOBS_1000];
+var data = theData[currGroup];
   var teams = svg.selectAll(".dot")
         .data(data, function(d) {
           return d.OCC_TITLE;
@@ -99,7 +110,7 @@ var data =theData[JOBS_1000];
       .append("circle")
         .attr("class", "dot")
         .attr("r", function(d) {
-  return = Math.sqrt( d.JOBS_1000 )/Math.PI);
+  return  Math.sqrt((d.TOT_EMP/100)/Math.PI);
 })
 
         .attr("cx", function(d) { return x(d.salary); })
@@ -108,12 +119,13 @@ var data =theData[JOBS_1000];
 
 
     teams.exit()
-      .transition()
-      .duration(200)
-      .style("fill", "#000");
+     .remove();
+      // .transition()
+      // .duration(200)
+      // .style("fill", "#000");
 
     teams.transition()
-      .duration(200)
+      .duration(100)
       .attr("cx", function(d) { return x(d.salary); })
       .attr("cy", function(d) { return y(d.city); })
       .style("fill", function(d) { return color(d.OCC_TITLE); });
